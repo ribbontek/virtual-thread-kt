@@ -1,5 +1,6 @@
 package org.example
 
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -8,6 +9,7 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import kotlin.time.Duration
@@ -46,6 +48,10 @@ class VirtualThreadExample {
             val executionTime6 = measureTimedValue {
                 runBlocking { virtualThreads.coroutineChannelFlow() }
             }
+
+            val executionTime7 = measureTimedValue {
+                runBlocking { virtualThreads.multipleVThreadsCoroutineAsync() }
+            }
             println()
             println(
                 """
@@ -56,6 +62,7 @@ class VirtualThreadExample {
                 |multipleVThreadsStartedViaThreadPoolExecutor -> ${executionTime4.duration.prettyPrint()}
                 |coroutineAsync -> ${executionTime5.duration.prettyPrint()} 
                 |coroutineChannelFlow -> ${executionTime6.duration.prettyPrint()} 
+                |multipleVThreadsCoroutineAsync -> ${executionTime7.duration.prettyPrint()} 
                 """.trimMargin()
             )
         }
@@ -133,6 +140,19 @@ class VirtualThreadExample {
                 }
             }
         }.collect()
+    }
+
+    /**
+     * Using coroutines with async in Virtual Thread Pool Task Executor
+     */
+    private suspend fun multipleVThreadsCoroutineAsync() = withContext(Executors.newVirtualThreadPerTaskExecutor().asCoroutineDispatcher()) {
+        (1..1000).map {
+            async {
+                println("Started coroutine $it")
+                delay(100)
+                println("Finished coroutine $it")
+            }
+        }.awaitAll()
     }
 }
 
