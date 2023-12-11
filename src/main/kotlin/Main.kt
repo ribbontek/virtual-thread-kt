@@ -55,7 +55,7 @@ class VirtualThreadExample {
             println()
             println(
                 """
-                ||🔥🔥🔥 RESULTS 🔥🔥🔥
+                |🔥🔥🔥 RESULTS 🔥🔥🔥
                 |multipleVThreadsStartedViaBuilder -> ${executionTime1.duration.prettyPrint()} 
                 |multipleVThreadsStartedDirectly -> ${executionTime2.duration.prettyPrint()} 
                 |multipleVThreadsStartedViaExecutor -> ${executionTime3.duration.prettyPrint()} 
